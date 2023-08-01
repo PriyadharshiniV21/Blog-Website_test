@@ -1,0 +1,169 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #444;
+}
+
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+label {
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="tel"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="submit"] {
+    background-color: #ffd700; /* gold */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+input[type="submit"]:hover {
+    background-color: #fbc62e; /* lighter gold on hover */
+}
+
+/* Additional styles for the account.html template */
+
+.profile-info {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.profile-info img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.profile-info p {
+    margin-bottom: 10px;
+}
+
+.profile-info a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.profile-info a:hover {
+    text-decoration: underline;
+}
+
+.logout-btn {
+    background-color: #ff4c4c; /* red */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.logout-btn:hover {
+    background-color: #cc0000; /* darker red on hover */
+}
+
+/* Additional styles for the index.html template */
+
+.landing-page {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.landing-page p {
+    margin-bottom: 10px;
+}
+
+.landing-page a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.landing-page a:hover {
+    text-decoration: underline;
+}
+
+/* Additional styles for the profile.html template */
+
+.profile-page {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.profile-page img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.profile-page label {
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.profile-page input[type="text"],
+.profile-page input[type="file"],
+.profile-page textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.profile-page input[type="submit"] {
+    background-color: #00a86b; /* green */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.profile-page input[type="submit"]:hover {
+    background-color: #008f5e; /* darker green on hover */
+}
