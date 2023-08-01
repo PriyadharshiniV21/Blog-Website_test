@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Welcome, {{ user_data.name }}!</h1>
+    <p>Your email: {{ user_data.email }}</p>
+    
+    <h2>Profile Information</h2>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div>
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ user_data.name }}">
+        <br>
+
+        <label for="profile_pic">Profile Picture:</label>
+        <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+        <br>
+        
+        <label for="bio">Bio:</label>
+        <textarea id="bio" name="bio" rows="4">{{ user_data.bio }}</textarea>
+        <br>
+        
+        <br>
+        <label for="linkedin">Linkedin:</label>
+        <textarea id="linkedin" name="linkedin">{{ user_data.linkedin }}</textarea>
+        <br>
+        <label for="github">Github:</label>
+        <textarea id="github" name="github">{{ user_data.github }}</textarea>
+        <br>
+        <label for="discord">Discord:</label>
+        <textarea id="discord" name="discord">{{ user_data.discord }}</textarea>
+        <br>
+        <label for="youtube">YouTube:</label>
+        <textarea id="youtube" name="youtube">{{ user_data.youtube }}</textarea>
+        <br>
+        <label for="instagram">Instagram:</label>
+        <textarea id="instagram" name="instagram">{{ user_data.instagram }}</textarea>
+        <br>
+
+        <!-- Display the "Change Password" button -->
+        <button type="button" id="change-password-btn">Change Password</button>
+
+        <input type="submit" value="Update Profile">
+    </form>
+    
+    <!-- Display the profile picture if it exists -->
+    {% if user_data.profile_pic %}
+        <h2>Profile Picture</h2>
+        <img src="data:image/jpeg;base64,{{ user_data.profile_pic }}" alt="Profile Picture">
+    {% endif %}
+
+    <br>
+
+    <script>
+        // Handle the "Change Password" button click
+        document.getElementById("change-password-btn").addEventListener("click", function() {
+            var newPassword = prompt("Enter your new password:");
+            if (newPassword !== null) {
+                // Send an AJAX request to update the password
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/update_password", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            alert("Password updated successfully!");
+                        } else {
+                            alert("Failed to update password. Please try again.");
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({ password: newPassword }));
+            }
+        });
+    </script>
+</body>
+</html>

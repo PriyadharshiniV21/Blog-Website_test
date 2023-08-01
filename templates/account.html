@@ -1,0 +1,20 @@
+<!-- account.html
+
+<!-- Display the current profile information -->
+<h1>Welcome, {{ user_data.name }}!</h1>
+<img src="{{ user_data.profile_picture }}" alt="Profile Picture">
+<p>Bio: {{ user_data.bio }}</p>
+
+<!-- Form to update profile information -->
+<form method="POST" action="{{ url_for('account') }}">
+    <label for="profile_picture">Profile Picture URL:</label>
+    <input type="text" name="profile_picture" value="{{ user_data.profile_picture }}" required>
+
+    <label for="name">Name:</label>
+    <input type="text" name="name" value="{{ user_data.name }}" required>
+
+    <label for="bio">Bio:</label>
+    <textarea name="bio">{{ user_data.bio }}</textarea>
+
+    <input type="submit" value="Update Profile">
+</form> -->
