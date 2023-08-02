@@ -20,13 +20,14 @@ def generate_otp():
     digits = string.digits
     return ''.join(random.choice(digits) for i in range(6))
 
+# Fetch existing blogs from the Blogs collection and store them in a deque
+blogs_list = deque(db['Blogs'].find({}))
+# Reverse the order of the deque to show new blogs first and old blogs last
+blogs_list.reverse()
+
 @app.route('/')
 def index():
-    # Fetch existing blogs from the Blogs collection and store them in a deque
-    blogs = deque(db['Blogs'].find({}))
-    # Reverse the order of the deque to show new blogs first and old blogs last
-    blogs.reverse()
-    return render_template('index.html', logged_in=False, blogs=blogs)
+    return render_template('index.html', logged_in=False, blogs=blogs_list)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,14 +38,9 @@ def login():
         # Retrieve user data from MongoDB based on the entered email
         user_data = users.find_one({"email": email})
 
-        # Fetch existing blogs from the Blogs collection and store them in a deque
-        blogs = deque(db['Blogs'].find({}))
-        # Reverse the order of the deque to show new blogs first and old blogs last
-        blogs.reverse()
-
         if user_data and bcrypt.checkpw(plain_password.encode('utf-8'), user_data['password'].encode('utf-8')):
             session['user_id'] = str(user_data['_id'])  # Store user ID in session for OTP verification
-            return render_template('index.html', logged_in=True, blogs=blogs)
+            return render_template('index.html', logged_in=True, blogs=blogs_list)
         else:
             return "Invalid email or password. Please try again."
 
@@ -138,10 +134,10 @@ def profile():
             discord = request.form['discord']
             youtube = request.form['youtube']
             instagram = request.form['instagram']
-        
+
             # Handling profile picture upload
             profile_pic = request.files['profile_pic']
-            profile_pic_b64 = None  # Initialize profile_pic_b64 as None
+            profile_pic_b64 = user_data.get('profile_pic')  # Retrieve the existing profile picture (if any)
 
             if profile_pic:
                 image_binary = profile_pic.read()
@@ -206,12 +202,16 @@ def create_blog():
         user_data = users.find_one({"_id": ObjectId(user_id)})
 
         if user_data:
-            # Get the blog text from the form
+            # Get the blog title and description from the form
+            title = request.form['title']
+            description = request.form['description']
             blog_text = request.form['blog_text']
 
             # Create a new blog entry and store it in the Blogs collection
             blog_entry = {
                 "user_id": user_id,
+                "title": title,
+                "description": description,
                 "blog_text": blog_text
             }
             blogs.insert_one(blog_entry)
@@ -221,5 +221,39 @@ def create_blog():
 
     return render_template('create_blog.html')
 
+@app.route('/blog/<blog_id>', methods=['GET', 'POST'])
+def blog_article(blog_id):
+    # Fetch the blog from the Blogs collection based on the provided blog_id
+    blog = blogs.find_one({"_id": ObjectId(blog_id)})
+
+    if blog:
+        if request.method == 'POST':
+            # Handle like button click
+            if 'like_btn' in request.form:
+                # Increment the likes count and update it in the database
+                blogs.update_one({"_id": ObjectId(blog_id)}, {"$inc": {"likes": 1}})
+                blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
+                return jsonify({"likes": blog['likes']})
+
+            # Handle comment button click
+            elif 'comment_btn' in request.form:
+                comment_text = request.form['comment']
+                if comment_text:
+                    # Append the new comment to the comments list and update it in the database
+                    blogs.update_one({"_id": ObjectId(blog_id)}, {"$push": {"comments": comment_text}})
+                    blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
+                    return jsonify({"comments": blog['comments']})
+
+            # Handle bookmark button click
+            elif 'bookmark_btn' in request.form:
+                # Increment the bookmarks count and update it in the database
+                blogs.update_one({"_id": ObjectId(blog_id)}, {"$inc": {"bookmarks": 1}})
+                blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
+                return jsonify({"bookmarks": blog['bookmarks']})
+
+        return render_template('blog_article.html', blog=blog)
+    else:
+        return "Blog not found."
+    
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

@@ -1,259 +1,172 @@
-/* styles.css */
+/* Reset default styles to avoid browser inconsistencies */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+/* Global styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #e71919;
+    line-height: 1.6;
+    background-color: #f0f0f0;
+    color: #333;
     margin: 20px;
 }
 
-h1 {
-    text-align: center;
-    color: #444;
-}
-
-/* Additional styles for the index.html template */
-
-.landing-page {
+.container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
+}
+
+/* Landing page styles */
+.landing-page {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.landing-page h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
 }
 
 .landing-page p {
+    font-size: 18px;
     margin-bottom: 10px;
 }
 
+.landing-page ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.landing-page ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.landing-page ul li:last-child {
+    margin-right: 0;
+}
+
 .landing-page a {
-    color: #0056b3;
     text-decoration: none;
+    color: #007bff;
 }
 
 .landing-page a:hover {
     text-decoration: underline;
 }
 
-.blog-box {
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-}
-
-.blog-box h2 {
-    color: #444;
-    margin-bottom: 5px;
-}
-
-.blog-box p {
-    margin-bottom: 10px;
-}
-
-/* Additional styles for the index.html template */
-
+/* Blog list styles */
 .blog-list {
-    list-style-type: none;
-    padding: 0;
+    list-style: none;
 }
 
 .blog-item {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-}
-
-.blog-item h2 {
-    color: #444;
-    margin-bottom: 5px;
-}
-
-.blog-item p {
     margin-bottom: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .blog-item a {
-    color: #0056b3;
+    display: block;
+    font-size: 20px;
+    color: #333;
     text-decoration: none;
 }
 
 .blog-item a:hover {
-    text-decoration: underline;
+    color: #007bff;
 }
 
-/* styles.css */
+/* Media query for responsiveness */
+@media screen and (max-width: 600px) {
+    .container {
+        max-width: 90%;
+    }
+}
+/* Reset default styles to avoid browser inconsistencies */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+/* Global styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    line-height: 1.6;
+    background-color: #f0f0f0;
+    color: #333;
     margin: 20px;
 }
 
-h1 {
-    text-align: center;
-    color: #444;
-}
-
-form {
-    max-width: 400px;
+.container {
+    max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
 }
 
-label {
-    color: #333;
-    display: block;
-    margin-bottom: 5px;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="tel"],
-textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-input[type="submit"] {
-    background-color: #ffd700; /* gold */
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-input[type="submit"]:hover {
-    background-color: #fbc62e; /* lighter gold on hover */
-}
-
-/* Additional styles for the account.html template */
-
-.profile-info {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-}
-
-.profile-info img {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.profile-info p {
-    margin-bottom: 10px;
-}
-
-.profile-info a {
-    color: #0056b3;
-    text-decoration: none;
-}
-
-.profile-info a:hover {
-    text-decoration: underline;
-}
-
-.logout-btn {
-    background-color: #ff4c4c; /* red */
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    display: block;
-    margin-top: 10px;
-}
-
-.logout-btn:hover {
-    background-color: #cc0000; /* darker red on hover */
-}
-
-/* Additional styles for the index.html template */
-
+/* Landing page styles */
 .landing-page {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.landing-page h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
 }
 
 .landing-page p {
+    font-size: 18px;
     margin-bottom: 10px;
 }
 
+.landing-page ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.landing-page ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.landing-page ul li:last-child {
+    margin-right: 0;
+}
+
 .landing-page a {
-    color: #0056b3;
     text-decoration: none;
+    color: #007bff;
 }
 
 .landing-page a:hover {
     text-decoration: underline;
 }
 
-/* Additional styles for the profile.html template */
-
-.profile-page {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
+/* Blog list styles */
+.blog-list {
+    list-style: none;
 }
 
-.profile-page img {
-    max-width: 100%;
-    height: auto;
+.blog-item {
     margin-bottom: 10px;
 }
 
-.profile-page label {
-    color: #333;
+.blog-item a {
     display: block;
-    margin-bottom: 5px;
+    font-size: 20px;
+    color: #333;
+    text-decoration: none;
 }
 
-.profile-page input[type="text"],
-.profile-page input[type="file"],
-.profile-page textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.blog-item a:hover {
+    color: #007bff;
 }
 
-.profile-page input[type="submit"] {
-    background-color: #00a86b; /* green */
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.profile-page input[type="submit"]:hover {
-    background-color: #008f5e; /* darker green on hover */
+/* Media query for responsiveness */
+@media screen and (max-width: 600px) {
+    .container {
+        max-width: 90%;
+    }
 }
