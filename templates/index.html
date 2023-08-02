@@ -1,16 +1,46 @@
-index.html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Welcome to Our Website</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>Welcome to Our Website</h1>
-    <p>Choose an option:</p>
-    <ul>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/signup">Signup</a></li>
-    </ul>
+    <div class="landing-page">
+        <h1>Welcome to My Blogger</h1>
+        {% if logged_in %}
+            <p class="landing-page">You are logged in. What would you like to do?</p>
+            <ul class="landing-page">
+                <li><a href="{{ url_for('profile') }}">View Profile</a></li>
+                <li><a href="{{ url_for('create_blog') }}">Create Blog</a></li>
+            </ul>
+        {% else %}
+            <ul class="landing-page">
+                <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            </ul>
+            <p class="landing-page">Forgot your password?</p>
+            <ul class="landing-page">
+                <li><a href="{{ url_for('forgot_password') }}">Reset Password</a></li>
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="landing-page">
+        <h2>Blogs:</h2>
+        {% if blogs %}
+            <ul class="blog-list">
+                {% for blog in blogs %}
+                    <li class="blog-item">
+                        <h2>{{ blog.blog_title }}</h2>
+                        <p>{{ blog.blog_text }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No blogs found.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

@@ -5,13 +5,15 @@ import string
 import base64
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from collections import deque
 
 app = Flask(__name__)
 app.secret_key = "e06ad29d3a8de30f758e5ec0dbdaab970db52def93177b23953f77c984900858"
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['Blogger']
-collection = db['Users']
+users = db['Users']
+blogs = db['Blogs']
 
 # Function to generate a random OTP
 def generate_otp():
@@ -20,9 +22,11 @@ def generate_otp():
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        return redirect(url_for('login'))
-    return render_template('index.html')
+    # Fetch existing blogs from the Blogs collection and store them in a deque
+    blogs = deque(db['Blogs'].find({}))
+    # Reverse the order of the deque to show new blogs first and old blogs last
+    blogs.reverse()
+    return render_template('index.html', logged_in=False, blogs=blogs)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -31,12 +35,16 @@ def login():
         plain_password = request.form['password']
 
         # Retrieve user data from MongoDB based on the entered email
-        user_data = collection.find_one({"email": email})
+        user_data = users.find_one({"email": email})
+
+        # Fetch existing blogs from the Blogs collection and store them in a deque
+        blogs = deque(db['Blogs'].find({}))
+        # Reverse the order of the deque to show new blogs first and old blogs last
+        blogs.reverse()
 
         if user_data and bcrypt.checkpw(plain_password.encode('utf-8'), user_data['password'].encode('utf-8')):
             session['user_id'] = str(user_data['_id'])  # Store user ID in session for OTP verification
-            flash("Login successful! Welcome, " + user_data['name'] + "!", "success")
-            return redirect(url_for('profile'))
+            return render_template('index.html', logged_in=True, blogs=blogs)
         else:
             return "Invalid email or password. Please try again."
 
@@ -50,7 +58,7 @@ def signup():
         email = request.form['email']
 
         # Check if the email already exists in the database
-        existing_user = collection.find_one({"email": email})
+        existing_user = users.find_one({"email": email})
         if existing_user:
             return "An account with this email already exists. Please login or use a different email."
 
@@ -62,7 +70,7 @@ def signup():
 
         try:
             # Insert the document into the MongoDB collection
-            collection.insert_one(data)
+            users.insert_one(data)
             return redirect(url_for('login'))  # Redirect to the login page after successful signup
         except Exception as e:
             return f"Failed to create an account: {str(e)}", 500
@@ -75,7 +83,7 @@ def forgot_password():
         email = request.form['email']
 
         # Check if the provided email or phone number exists in the database
-        user_data = collection.find_one({"$or": [{"email": email}]})
+        user_data = users.find_one({"$or": [{"email": email}]})
 
         if user_data:
             otp = generate_otp()
@@ -118,7 +126,7 @@ def profile():
         return redirect(url_for('login'))
 
     user_id = session['user_id']
-    user_data = collection.find_one({"_id": ObjectId(user_id)})
+    user_data = users.find_one({"_id": ObjectId(user_id)})
 
     if user_data:
         if request.method == 'POST':
@@ -140,7 +148,7 @@ def profile():
                 profile_pic_b64 = base64.b64encode(image_binary).decode('utf-8')
 
             # Update the user's profile information in the Users collection
-            collection.update_one({"_id": ObjectId(user_id)}, {
+            users.update_one({"_id": ObjectId(user_id)}, {
                 "$set": {
                     "name": name,
                     "bio": bio,
@@ -166,7 +174,7 @@ def update_password():
         return jsonify({"message": "User not authenticated."}), 401
 
     user_id = session['user_id']
-    user_data = collection.find_one({"_id": ObjectId(user_id)})
+    user_data = users.find_one({"_id": ObjectId(user_id)})
 
     if user_data:
         if request.method == 'POST':
@@ -176,7 +184,7 @@ def update_password():
                 # For example, you can use bcrypt or passlib to hash the password
                 hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-                collection.update_one({"_id": ObjectId(user_id)}, {
+                users.update_one({"_id": ObjectId(user_id)}, {
                     "$set": {
                         "password": hashed_password
                     }
@@ -187,6 +195,31 @@ def update_password():
                 return jsonify({"message": "Invalid request. New password not provided."}), 400
     else:
         return jsonify({"message": "User not found."}), 404
+    
+@app.route('/create_blog', methods=['GET', 'POST'])
+def create_blog():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        user_id = session['user_id']
+        user_data = users.find_one({"_id": ObjectId(user_id)})
+
+        if user_data:
+            # Get the blog text from the form
+            blog_text = request.form['blog_text']
+
+            # Create a new blog entry and store it in the Blogs collection
+            blog_entry = {
+                "user_id": user_id,
+                "blog_text": blog_text
+            }
+            blogs.insert_one(blog_entry)
+
+            flash("Blog article created successfully!", "success")
+            return redirect(url_for('index'))
+
+    return render_template('create_blog.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

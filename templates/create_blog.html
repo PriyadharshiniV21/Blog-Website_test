@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog</title>
+</head>
+<body>
+    <h1>Create Blog</h1>
+    <form method="POST" action="{{ url_for('create_blog') }}">
+        <label for="blog_text">Write your blog:</label>
+        <textarea id="blog_text" name="blog_text" rows="10" cols="50" required></textarea>
+        <br>
+        <input type="submit" value="Create Blog">
+    </form>
+    <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
+</html>

@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>Welcome, {{ user_data.name }}!</h1>
-    <p>Your email: {{ user_data.email }}</p>
+    <p>Welcome, {{ user_data.name }}!</p>
     
     <h2>Profile Information</h2>
     {% with messages = get_flashed_messages() %}

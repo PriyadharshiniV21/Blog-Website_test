@@ -2,6 +2,96 @@
 
 body {
     font-family: Arial, sans-serif;
+    background-color: #e71919;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #444;
+}
+
+/* Additional styles for the index.html template */
+
+.landing-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.landing-page p {
+    margin-bottom: 10px;
+}
+
+.landing-page a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.landing-page a:hover {
+    text-decoration: underline;
+}
+
+.blog-box {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.blog-box h2 {
+    color: #444;
+    margin-bottom: 5px;
+}
+
+.blog-box p {
+    margin-bottom: 10px;
+}
+
+/* Additional styles for the index.html template */
+
+.blog-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.blog-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.blog-item h2 {
+    color: #444;
+    margin-bottom: 5px;
+}
+
+.blog-item p {
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.blog-item a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.blog-item a:hover {
+    text-decoration: underline;
+}
+
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
     background-color: #f2f2f2;
     margin: 20px;
 }
