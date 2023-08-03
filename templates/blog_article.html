@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ blog.blog_title }}</title>
+    <title>{{ blog.title }}</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>{{ blog.blog_title }}</h1>
+    <h1>{{ blog.title }}</h1>
     <p>{{ blog.blog_text }}</p>
 
     <!-- Likes -->
@@ -35,8 +35,14 @@
     </div>
 
     <script>
+        // Function to show login popup
+        function showLoginPopup() {
+            alert('Please log in to perform this action.');
+        }
+
         // JavaScript functions to handle like, comment, and bookmark actions
         function handleLike() {
+            {% if logged_in %}
             fetch(window.location.pathname, {
                 method: 'POST',
                 body: new URLSearchParams({
@@ -54,10 +60,13 @@
             .catch(error => {
                 console.error('Error handling like:', error);
             });
-                
+            {% else %}
+            showLoginPopup();
+            {% endif %}    
         }
 
         function handleComment() {
+            {% if logged_in %}
             const commentInput = document.getElementById('comment_input');
             const comment = commentInput.value.trim();
             if (comment) {
@@ -89,9 +98,13 @@
                     console.error('Error handling comment:', error);
                 });
             }
+            {% else %}
+            showLoginPopup();
+            {% endif %}
         }
 
         function handleBookmark() {
+            {% if logged_in %}
             fetch(window.location.pathname, {
                 method: 'POST',
                 body: new URLSearchParams({
@@ -103,11 +116,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert("Blog bookmarked!");
+                const bookmarksSpan = document.getElementById('bookmarks');
+                bookmarksSpan.textContent = data.bookmarks;
             })
             .catch(error => {
                 console.error('Error handling bookmark:', error);
             });
+            {% else %}
+            showLoginPopup();
+            {% endif %}
         }
     </script>
 

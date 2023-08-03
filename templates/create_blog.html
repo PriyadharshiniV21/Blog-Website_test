@@ -4,23 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Blog</title>
+    <!-- Add the Google Translate API script -->
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <!-- Other meta tags and styles -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 <body>
     <h1>Create Blog</h1>
     <div style="display: flex;">
-        <form method="POST" action="{{ url_for('create_blog') }}" style="flex: 1;">
-            <label for="title">Title:</label>
-            <textarea id="title" name="title" rows="1" cols="50" required></textarea>
-            <br>
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" rows="3" required></textarea>
-            <br>
-            <label for="blog_text">Write your blog:</label>
-            <textarea id="blog_text" name="blog_text" rows="10" cols="50" required></textarea>
-            <br>
-            <input type="submit" value="Create Blog">
-        </form>
+        <div style="flex: 1;">
+            <form method="POST" action="{{ url_for('create_blog') }}">
+                <label for="title">Title:</label>
+                <textarea id="title" name="title" rows="1" cols="50" required></textarea>
+                <br>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="3" required></textarea>
+                <br>
+                <label for="blog_text">Write your blog:</label>
+                <div id="editor-container"></div>
+                <input type="hidden" id="blog_text" name="blog_text" required>
+                <br>
+                <input type="submit" value="Create Blog">
+            </form>
+        </div>
     </div>
     <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+    <!-- Add the Google Translate Element -->
+    <div id="google_translate_element"></div>
+
+    <!-- Initialize the Google Translate Element -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,es,fr,de,ru,ta,it,ja,zh-CN'}, 'google_translate_element');
+        }
+    </script>
+    
+    <script type="text/javascript">
+        // Function to extract plain text from Quill editor content
+        function extractPlainTextFromEditor() {
+            var editorHTML = document.querySelector('.ql-editor').innerHTML;
+            var tempElement = document.createElement('div');
+            tempElement.innerHTML = editorHTML;
+            return tempElement.textContent || tempElement.innerText || '';
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Your existing code for initializing Quill, including custom handlers
+
+            // Get the form element
+            var form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                // Prevent the form from submitting before processing
+                event.preventDefault();
+
+                // Extract the plain text from the Quill editor
+                var plainText = extractPlainTextFromEditor();
+
+                // Update the hidden input field with the plain text
+                document.getElementById("blog_text").value = plainText;
+
+                // Submit the form programmatically after processing
+                form.submit();
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            var icons = Quill.import('ui/icons');
+            icons['document'] = '<i class="fas fa-file"></i>';
+            icons['video'] = '<i class="fas fa-video"></i>'; // Add video icon
+    
+            var quill = new Quill("#editor-container", {
+                theme: "snow",
+                modules: {
+                    toolbar: [
+                        [{ header: [1, 2, 3, false] }],
+                        ["bold", "italic", "underline", "strike"],
+                        ["image", "video",],
+                        ["clean"],
+                        [{ "document": "Insert Document" }],
+                        [{ "link": "Insert Link" }]
+                    ]
+                }
+            });
+    
+            // Custom document insertion handler
+            var fileInput = document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.setAttribute('accept', '.doc, .docx, .pdf'); // Specify accepted file types
+    
+            var documentButton = document.querySelector('.ql-document');
+            documentButton.addEventListener('click', function() {
+                fileInput.click();
+            });
+    
+            fileInput.addEventListener('change', function(event) {
+                var file = event.target.files[0];
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var fileContent = reader.result;
+                    var link = '<a href="' + fileContent + '" target="_blank">' + file.name + '</a>';
+                    quill.clipboard.dangerouslyPasteHTML(quill.getSelection().index, link);
+                };
+                reader.readAsDataURL(file);
+            });
+    
+            // Custom link insertion handler
+            var linkButton = document.querySelector('.ql-link');
+            linkButton.addEventListener('click', function() {
+                var url = prompt('Enter the URL:');
+                if (url) {
+                    var link = '<a href="' + url + '" target="_blank">' + url + '</a>';
+                    quill.clipboard.dangerouslyPasteHTML(quill.getSelection().index, link);
+                }
+            });
+    
+            // Custom video insertion handler
+            videoInput.setAttribute('type', 'file');
+            videoInput.setAttribute('accept', 'video/*'); // Specify accepted video file types
+    
+            var videoButton = document.querySelector('.ql-video');
+            videoButton.addEventListener('click', function() {
+                videoInput.click();
+            });
+    
+            videoInput.addEventListener('change', function(event) {
+                var file = event.target.files[0];
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var videoURL = reader.result;
+                    var videoEmbed = '<video controls><source src="' + videoURL + '"></video>';
+                    quill.clipboard.dangerouslyPasteHTML(quill.getSelection().index, videoEmbed);
+                };
+                reader.readAsDataURL(file);
+            });
+    
+            quill.on("text-change", function() {
+                document.getElementById("blog_text").value = quill.root.innerHTML;
+            });
+        });
+    </script>
+    
 </body>
 </html>

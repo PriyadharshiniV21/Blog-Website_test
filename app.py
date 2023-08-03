@@ -40,6 +40,7 @@ def login():
 
         if user_data and bcrypt.checkpw(plain_password.encode('utf-8'), user_data['password'].encode('utf-8')):
             session['user_id'] = str(user_data['_id'])  # Store user ID in session for OTP verification
+            session['logged_in'] = True
             return render_template('index.html', logged_in=True, blogs=blogs_list)
         else:
             return "Invalid email or password. Please try again."
@@ -217,7 +218,7 @@ def create_blog():
             blogs.insert_one(blog_entry)
 
             flash("Blog article created successfully!", "success")
-            return redirect(url_for('index'))
+            return redirect(url_for('create_blog'))
 
     return render_template('create_blog.html')
 
@@ -227,33 +228,44 @@ def blog_article(blog_id):
     blog = blogs.find_one({"_id": ObjectId(blog_id)})
 
     if blog:
+        logged_in = session.get('logged_in', False)
         if request.method == 'POST':
-            # Handle like button click
-            if 'like_btn' in request.form:
-                # Increment the likes count and update it in the database
-                blogs.update_one({"_id": ObjectId(blog_id)}, {"$inc": {"likes": 1}})
-                blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
-                return jsonify({"likes": blog['likes']})
-
-            # Handle comment button click
-            elif 'comment_btn' in request.form:
-                comment_text = request.form['comment']
-                if comment_text:
-                    # Append the new comment to the comments list and update it in the database
-                    blogs.update_one({"_id": ObjectId(blog_id)}, {"$push": {"comments": comment_text}})
+            if logged_in:
+                # Handle like button click
+                if 'like_btn' in request.form:
+                    # Increment the likes count and update it in the database
+                    blogs.update_one({"_id": ObjectId(blog_id)}, {"$inc": {"likes": 1}})
                     blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
-                    return jsonify({"comments": blog['comments']})
+                    return jsonify({"likes": blog['likes']})
 
-            # Handle bookmark button click
-            elif 'bookmark_btn' in request.form:
-                # Increment the bookmarks count and update it in the database
-                blogs.update_one({"_id": ObjectId(blog_id)}, {"$inc": {"bookmarks": 1}})
-                blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
-                return jsonify({"bookmarks": blog['bookmarks']})
+                # Handle comment button click
+                elif 'comment_btn' in request.form:
+                    comment_text = request.form['comment']
+                    if comment_text:
+                        # Append the new comment to the comments list and update it in the database
+                        blogs.update_one({"_id": ObjectId(blog_id)}, {"$push": {"comments": comment_text}})
+                        blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
+                        return jsonify({"comments": blog['comments']})
 
-        return render_template('blog_article.html', blog=blog)
+                # Handle bookmark button click
+                elif 'bookmark_btn' in request.form:
+                    # Increment the bookmarks count and update it in the database
+                    blogs.update_one({"_id": ObjectId(blog_id)}, {"$inc": {"bookmarks": 1}})
+                    blog = blogs.find_one({"_id": ObjectId(blog_id)})  # Fetch the updated blog document
+                    return jsonify({"bookmarks": blog['bookmarks']})
+                
+            return jsonify({"message": "Please log in to perform this action."}), 401
+
+        return render_template('blog_article.html', blog=blog, logged_in=logged_in)
     else:
         return "Blog not found."
+    
+@app.route('/logout')
+def logout():
+    # Clear user-related session variables upon logout
+    session.pop('user_id', None)
+    session['logged_in'] = False
+    return redirect(url_for('login'))
     
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

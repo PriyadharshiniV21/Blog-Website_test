@@ -10,11 +10,12 @@
     <div class="landing-page">
         <h1>Welcome to My Blogger</h1>
         {% if logged_in %}
-            <p class="landing-page">You are logged in. What would you like to do?</p>
             <ul class="landing-page">
                 <li><a href="{{ url_for('profile') }}">View Profile</a></li>
                 <li><a href="{{ url_for('create_blog') }}">Create Blog</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
+            
         {% else %}
             <ul class="landing-page">
                 <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
@@ -34,7 +35,7 @@
                 {% for blog in blogs %}
                     <li class="blog-item">
                         <!-- Add a hyperlink to the full blog article page for each blog title -->
-                        <p><a href="{{ url_for('blog_article', blog_id=blog._id) }}">{{ blog.blog_text }}</a></p>
+                        <p><a href="{{ url_for('blog_article', blog_id=blog._id) }}">{{ blog.title }}</a></p>
                     </li>
                 {% endfor %}
             </ul>
