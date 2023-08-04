@@ -25,6 +25,10 @@
                 <label for="blog_text">Write your blog:</label>
                 <div id="editor-container"></div>
                 <input type="hidden" id="blog_text" name="blog_text" required>
+                <input type="hidden" id="image_data" name="image_data">
+                <input type="hidden" id="video_data" name="video_data">
+                <input type="hidden" id="document_data" name="document_data">
+                <input type="hidden" id="link_data" name="link_data">
                 <br>
                 <input type="submit" value="Create Blog">
             </form>
@@ -51,6 +55,56 @@
             return tempElement.textContent || tempElement.innerText || '';
         }
 
+        // Function to extract image data from Quill editor content
+        function extractImageDataFromEditor() {
+            var images = document.querySelectorAll('.ql-editor img');
+            var imageDataList = [];
+
+            images.forEach(function(image) {
+                var dataUrl = image.src;
+                imageDataList.push(dataUrl);
+            });
+
+            return imageDataList;
+        }
+
+        // Function to extract video URLs from Quill editor content
+        function extractVideosFromEditor() {
+            var videos = document.querySelectorAll('.ql-video');
+            var videoUrls = [];
+            videos.forEach(function(video) {
+                var videoUrl = video.getAttribute('src');
+                videoUrls.push(videoUrl);
+            });
+            return videoUrls;
+        }
+
+        // Function to extract document URLs from Quill editor content
+        function extractDocumentsFromEditor() {
+            var documents = document.querySelectorAll('.ql-document');
+            var documentUrls = [];
+            documents.forEach(function(document) {
+                var documentUrl = document.getAttribute('href');
+                documentUrls.push(documentUrl);
+            });
+            return documentUrls;
+        }
+
+        // Function to extract link URLs and link text from Quill editor content
+        function extractLinksFromEditor() {
+            var links = document.querySelectorAll('.ql-link');
+            var linkData = [];
+            links.forEach(function(link) {
+                var linkUrl = link.getAttribute('href');
+                var linkText = link.innerHTML;
+                linkData.push({
+                    url: linkUrl,
+                    text: linkText
+                });
+            });
+            return linkData;
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             // Your existing code for initializing Quill, including custom handlers
 
@@ -66,10 +120,23 @@
                 // Update the hidden input field with the plain text
                 document.getElementById("blog_text").value = plainText;
 
+                var imageData = extractImageDataFromEditor();
+                document.getElementById("image_data").value = imageData;
+
+                var videoData = extractVideosFromEditor();
+                document.getElementById("video_data").value = videoData;
+
+                var documentData = extractDocumentsFromEditor();
+                document.getElementById("document_data").value = documentData;
+
+                var linkData = extractLinksFromEditor();
+                document.getElementById("link_data").value = linkData;
+
                 // Submit the form programmatically after processing
                 form.submit();
             });
         });
+
         document.addEventListener("DOMContentLoaded", function() {
             var icons = Quill.import('ui/icons');
             icons['document'] = '<i class="fas fa-file"></i>';
@@ -81,8 +148,7 @@
                     toolbar: [
                         [{ header: [1, 2, 3, false] }],
                         ["bold", "italic", "underline", "strike"],
-                        ["image", "video",],
-                        ["clean"],
+                        ["image", "video"],
                         [{ "document": "Insert Document" }],
                         [{ "link": "Insert Link" }]
                     ]
@@ -119,7 +185,7 @@
                     quill.clipboard.dangerouslyPasteHTML(quill.getSelection().index, link);
                 }
             });
-    
+
             // Custom video insertion handler
             videoInput.setAttribute('type', 'file');
             videoInput.setAttribute('accept', 'video/*'); // Specify accepted video file types
@@ -143,8 +209,14 @@
             quill.on("text-change", function() {
                 document.getElementById("blog_text").value = quill.root.innerHTML;
             });
+
+            // Example usage to extract image data
+            var imageButton = document.querySelector('.ql-image');
+            imageButton.addEventListener('click', function() {
+                var imageDataList = extractImageDataFromEditor();
+                console.log(imageDataList); // Display the image data in the console
+            });
         });
     </script>
-    
 </body>
 </html>

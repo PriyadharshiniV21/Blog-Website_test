@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from bs4 import BeautifulSoup
 import bcrypt
 import random
 import string
@@ -14,6 +15,7 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['Blogger']
 users = db['Users']
 blogs = db['Blogs']
+media = db['Media']
 
 # Function to generate a random OTP
 def generate_otp():
@@ -207,6 +209,10 @@ def create_blog():
             title = request.form['title']
             description = request.form['description']
             blog_text = request.form['blog_text']
+            image_data = request.form['image_data']
+            video_data = request.form['video_data']
+            document_data = request.form['document_data']
+            link_data = request.form['link_data']
 
             # Create a new blog entry and store it in the Blogs collection
             blog_entry = {
@@ -215,7 +221,18 @@ def create_blog():
                 "description": description,
                 "blog_text": blog_text
             }
-            blogs.insert_one(blog_entry)
+            result = blogs.insert_one(blog_entry)
+            blog_id = result.inserted_id  # Get the inserted blog_id
+
+            media_entry = {
+                    "blog_id": blog_id,  # Link the media to the specific blog
+                    "image_data": image_data,
+                    "video_data": video_data,
+                    "document_data": document_data,
+                    "link_data": link_data
+                }
+            
+            media.insert_one(media_entry)
 
             flash("Blog article created successfully!", "success")
             return redirect(url_for('create_blog'))
