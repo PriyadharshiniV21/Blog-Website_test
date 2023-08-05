@@ -126,7 +126,13 @@ def profile():
 
     user_id = session['user_id']
     user_data = users.find_one({"_id": ObjectId(user_id)})
-
+    
+    blog_data = []
+    if 'blogs' in user_data:
+        for blog_id in user_data['blogs']:
+            blog = blogs.find_one({"_id": ObjectId(blog_id)})
+            blog_data.append(blog)
+            
     if user_data:
         if request.method == 'POST':
             # Get the additional profile information from the form
@@ -163,7 +169,7 @@ def profile():
             flash("Profile updated successfully!", "success")
             return redirect(url_for('profile'))
 
-        return render_template('profile.html', user_data=user_data)
+        return render_template('profile.html', user_data=user_data, blog_data=blog_data)
     else:
         return "User not found."
     
@@ -221,8 +227,9 @@ def create_blog():
                 "description": description,
                 "blog_text": blog_text
             }
-            result = blogs.insert_one(blog_entry)
-            blog_id = result.inserted_id  # Get the inserted blog_id
+            
+            # Get the inserted blog_id
+            blog_id = blogs.insert_one(blog_entry).inserted_id  
 
             media_entry = {
                     "blog_id": blog_id,  # Link the media to the specific blog
@@ -234,6 +241,12 @@ def create_blog():
             
             media.insert_one(media_entry)
 
+            # Add the blog_id to the user's 'blogs' field in the User collection
+            users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$push": {"blogs": blog_id}}
+            )
+            
             flash("Blog article created successfully!", "success")
             return redirect(url_for('create_blog'))
 
@@ -273,7 +286,27 @@ def blog_article(blog_id):
                 
             return jsonify({"message": "Please log in to perform this action."}), 401
 
-        return render_template('blog_article.html', blog=blog, logged_in=logged_in)
+        return render_template('blog_article.html', blog=blog, logged_in=logged_in, logged_user=False)
+    else:
+        return "Blog not found."
+    
+@app.route('/profile/blog/<blog_id>', methods=['GET', 'POST'])
+def remove_blog(blog_id):
+    user_id = session['user_id']
+    blog = blogs.find_one({"_id": ObjectId(blog_id)})
+
+    if blog:
+        if request.method == 'POST':
+            if 'remove_btn' in request.form:
+                blogs.delete_one({"_id": ObjectId(blog_id)})
+                users.update_one(
+                        {"_id": ObjectId(user_id)},
+                        {"$pull": {"blogs": blog_id}}
+                    )
+                flash("Blog removed successfully!", "success")
+                return redirect(url_for('index'))
+            
+        return render_template('blog_article.html', blog=blog, logged_user=True)
     else:
         return "Blog not found."
     

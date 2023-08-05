@@ -66,6 +66,21 @@
 
     <br>
 
+    <!-- Display the created blogs section -->
+    <h2>Blogs:</h2>
+    {% if blog_data %}
+        <ul class="blog-list">
+            {% for blog in blog_data %}
+                <li class="blog-item">
+                    <!-- Add a hyperlink to the full blog article page for each blog title -->
+                    <p><a href="{{ url_for('remove_blog', blog_id=blog._id) }}">{{ blog.title }}</a></p>
+                </li>
+            {% endfor %}
+    </ul>
+    {% else %}
+        <p>No blogs found.</p>
+    {% endif %}
+
     <script>
         // Handle the "Change Password" button click
         document.getElementById("change-password-btn").addEventListener("click", function() {

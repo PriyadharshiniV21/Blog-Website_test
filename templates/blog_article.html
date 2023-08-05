@@ -8,32 +8,39 @@
 </head>
 <body>
     <h1>{{ blog.title }}</h1>
-    <h4>{{ blog.description }}</h4>
+    <h4>{{ blog.description }}</h4\>
     <p>{{ blog.blog_text }}</p>
 
-    <!-- Likes -->
-    <div>
-        <p>Likes: <span id="likes">{{ blog.likes }}</span></p>
-        <button id="like_btn" onclick="handleLike()">Like</button>
-    </div>
+    {% if logged_user %}
+        <!-- Remove Blog -->
+        <div>
+            <button id="remove_btn" onclick="handleRemove()">Remove Blog</button>
+        </div>
+    {% else %}
+        <!-- Likes -->
+        <div>
+            <p>Likes: <span id="likes">{{ blog.likes }}</span></p>
+            <button id="like_btn" onclick="handleLike()">Like</button>
+        </div>
 
-    <!-- Comments -->
-    <div>
-        <p>Comments: <span id="comments_count">{{ blog.comments|length }}</span></p>
-        <ul id="comments_list">
-            {% for comment in blog.comments %}
-                <li>{{ comment }}</li>
-            {% endfor %}
-        </ul>
-        <textarea id="comment_input" rows="3" cols="50"></textarea>
-        <button onclick="handleComment()">Add Comment</button>
-    </div>
+        <!-- Comments -->
+        <div>
+            <p>Comments: <span id="comments_count">{{ blog.comments|length }}</span></p>
+            <ul id="comments_list">
+                {% for comment in blog.comments %}
+                    <li>{{ comment }}</li>
+                {% endfor %}
+            </ul>
+            <textarea id="comment_input" rows="3" cols="50"></textarea>
+            <button onclick="handleComment()">Add Comment</button>
+        </div>
 
-    <!-- Bookmark -->
-    <div>
-        <p>Bookmark: <span id="bookmarks">{{ blog.bookmarks }}</span></p>
-        <button id="bookmark_btn" onclick="handleBookmark()">Bookmark</button>
-    </div>
+        <!-- Bookmark -->
+        <div>
+            <p>Bookmark: <span id="bookmarks">{{ blog.bookmarks }}</span></p>
+            <button id="bookmark_btn" onclick="handleBookmark()">Bookmark</button>
+        </div>
+    {% endif %}
 
     <script>
         // Function to show login popup
@@ -127,6 +134,31 @@
             showLoginPopup();
             {% endif %}
         }
+
+        function handleRemove() {
+            // Get the blog ID from the URL (assuming the blog ID is available in the URL)
+            var blogId = '{{ blog._id }}';
+
+            // Send a fetch request to remove the blog
+            fetch('/profile/blog/' + blogId, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    'remove_btn': true
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Redirect to the profile page after successful removal
+                window.location.href = '{{ url_for("profile") }}';
+            })
+            .catch(error => {
+                console.error('Error handling blog removal:', error);
+            });
+        }
+        
     </script>
 
 </body>
